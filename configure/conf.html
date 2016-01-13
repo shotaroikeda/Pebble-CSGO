@@ -5,9 +5,14 @@
 
   <script style="text/javascript">
    $("#save-conf").click(function () {
-       document.location = "pebblejs://close#success";
+       var retVal = {
+           'port-num': $('#portNumber').value
+       };
+
+       document.location = "pebblejs://close#" + encodeURIComponent(JSON.stringify(retVal));
    });
   </script>
+
   <head>
     <title>Pebble CSGO Configuration Page</title>
   </head>
@@ -16,11 +21,11 @@
       <div class="panel panel-primary">
         <div class="panel-heading">
           <h3>Pebble-CS:GO Configuration</h3>
-	</div>
+        </div>
 
-	<div class="panel-body">
-	  Please Enter Configured Port Address: (Default: 3000)
-	  <input type="text" name="port-num"><br>
+        <div class="panel-body">
+          Please Enter Configured Port Address: (Default: 3000)
+          <input type="text" name="port-num" id="portNumber"><br>
           <button id="save-conf">Save</button>
         </div>
       </div>
