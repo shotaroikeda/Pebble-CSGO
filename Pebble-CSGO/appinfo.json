@@ -1,18 +1,19 @@
 {
-  "uuid": "ed42caa4-ff9d-4b34-ba82-f38dfd4fd3e0",
-  "shortName": "Pebble-CSGO",
-  "longName": "Pebble-CSGO",
-  "companyName": "MakeAwesomeHappen",
-  "versionLabel": "1.0",
-  "sdkVersion": "3",
-  "targetPlatforms": ["aplite", "basalt", "chalk"],
-  "watchapp": {
-    "watchface": false
-  },
-  "appKeys": {
-    "dummy": 0
-  },
-  "resources": {
-    "media": []
-  }
+    "uuid": "ed42caa4-ff9d-4b34-ba82-f38dfd4fd3e0",
+    "shortName": "Pebble-CSGO",
+    "longName": "Pebble-CSGO",
+    "companyName": "MakeAwesomeHappen",
+    "versionLabel": "0.1.0a",
+    "sdkVersion": "3",
+    "targetPlatforms": ["aplite", "basalt", "chalk"],
+    "watchapp": {
+        "watchface": false
+    },
+    "appKeys": {
+        "dummy": 0
+    },
+    "resources": {
+        "media": []
+    },
+    "capabilities" : ["configurable"]
 }
