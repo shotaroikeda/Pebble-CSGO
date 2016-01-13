@@ -1,6 +1,14 @@
 <html>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+  <script style="text/javascript">
+   $("#save-conf").click(function () {
+       document.location = "pebblejs://close#success";
+   });
+  </script>
+
   <head>Pebble CSGO Configuration Page</head>
   <body>
-    <span><a href="pebblejs://close#success">Send Info</a></span>
+    <button id="save-conf">Save</button>
   </body>
 </html>
