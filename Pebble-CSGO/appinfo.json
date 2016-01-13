@@ -3,7 +3,7 @@
     "shortName": "Pebble-CSGO",
     "longName": "Pebble-CSGO",
     "companyName": "MakeAwesomeHappen",
-    "versionLabel": "0.1.0a",
+    "versionLabel": "0.1",
     "sdkVersion": "3",
     "targetPlatforms": ["aplite", "basalt", "chalk"],
     "watchapp": {
