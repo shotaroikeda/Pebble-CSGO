@@ -1,5 +1,7 @@
 <html>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
   <script style="text/javascript">
    $("#save-conf").click(function () {
@@ -10,13 +12,17 @@
     <title>Pebble CSGO Configuration Page</title>
   </head>
   <body>
-    <h1>CSGO Configuration</h1>
+    <div class="container">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3>Pebble-CS:GO Configuration</h3>
+	</div>
 
-    <select id="invert_select">
-      <option value="off">Off</option>
-      <option value="on">On</option>
-    </select>
-
-    <button id="save-conf">Save</button>
+	<div class="panel-body">
+	  Please Enter Configured Port Address: (Default: 3000)
+	  <input type="text" name="port-num"><br>
+          <button id="save-conf">Save</button>
+        </div>
+      </div>
   </body>
 </html>
