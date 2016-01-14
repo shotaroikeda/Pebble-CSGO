@@ -27,12 +27,14 @@
   </body>
 
   <script>
-   $("#save-conf").click(function () {
-       var retVal = {
-           'port-num': $('#portNumber').value
-       };
+   document.ready(function () {
+       $("#save-conf").click(function () {
+           var retVal = {
+               'port-num': $('#portNumber').val();
+           };
 
-       document.location = "pebblejs://close" + encodeURIComponent(JSON.stringify(retVal));
+           document.location = "pebblejs://close" + encodeURIComponent(JSON.stringify(retVal));
+       });
    });
   </script>
 
