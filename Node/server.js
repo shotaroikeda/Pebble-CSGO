@@ -20,6 +20,45 @@ Object.keys(ifaces).forEach(function (ifname) {
     });
 });
 
+/////////////////////////
+// Filtering functions //
+/////////////////////////
+
+function filterCSGOData(dataObj)
+{
+    var dataMap = {
+	provider : {},
+	map : {},
+	round : {},
+	/*
+	  As of now, not required...maybe in the future for gui fanciness
+	  player :
+	*/ 
+    };
+
+    if (dataObj.provider)
+    {
+	dataMap.provider["timestamp"] = dataObj.provider.timestamp || null;
+    }
+    if (dataObj.map)
+    {
+	dataMap.map["mode"] = dataObj.map.mode || null;
+    }
+
+    if (dataObj.round)
+    {
+	dataMap.round["phase"] = dataMap.round.phase || null;
+	dataMap.round["bomb"] = dataMap.round.bomb || null;
+    }
+    
+    console.log(dataMap);
+    return dataMap;
+}
+
+////////////////////
+// Server Portion //
+////////////////////
+
 // TODO: Find an open port to use
 port = 8099;
 
@@ -45,7 +84,7 @@ server = http.createServer( function(req, res) {
 
         if (dataObj)
         {
-            res.end(JSON.stringify(dataObj));
+            res.end(JSON.stringify(filterCSGOData(dataObj)));
         }
         else
         {
