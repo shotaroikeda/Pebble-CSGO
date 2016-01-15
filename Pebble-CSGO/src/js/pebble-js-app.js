@@ -1,3 +1,9 @@
+var http = require('http');
+
+var server = http.createServer(function (res, req) {
+    console.log("found request");
+});
+
 ////////////////////////////////
 // Event Listeners for pebble //
 ////////////////////////////////
@@ -13,5 +19,5 @@ Pebble.addEventListener('showConfiguration', function (e) {
 
 Pebble.addEventListener('webviewclosed', function (e) {
     console.log("Page closed.");
-    console.log("Closed with " + e.response);
+    console.log("Closed with " + e.response["port-num"]);
 });
