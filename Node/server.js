@@ -78,7 +78,6 @@ server = http.createServer( function(req, res) {
 
         req.on('end', function () {
             dataObj = JSON.parse(body);
-            console.log(dataObj);
         });
     }
     else
