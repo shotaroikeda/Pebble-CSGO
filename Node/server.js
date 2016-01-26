@@ -16,7 +16,10 @@ Object.keys(ifaces).forEach(function (ifname) {
         if (iface.internal || iface.family == 'IPv6')
             return;
         else
-            myHost = iface.address;
+        {
+            if (!myHost)
+                myHost = iface.address;
+        }
     });
 });
 
