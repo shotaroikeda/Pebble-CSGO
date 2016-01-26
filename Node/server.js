@@ -38,7 +38,7 @@ function filterCSGOData(dataObj)
 
     if (dataObj.provider)
     {
-	dataMap.provider["timestamp"] = dataObj.provider.timestamp || null;
+	dataMap.provider["timestamp"] = dataObj.provider.timestamp;
     }
     if (dataObj.map)
     {
@@ -47,11 +47,10 @@ function filterCSGOData(dataObj)
 
     if (dataObj.round)
     {
-	dataMap.round["phase"] = dataMap.round.phase || null;
-	dataMap.round["bomb"] = dataMap.round.bomb || null;
+	dataMap.round["phase"] = dataObj.round.phase || null;
+	dataMap.round["bomb"] = dataObj.round.bomb || null;
     }
-    
-    console.log(dataMap);
+
     return dataMap;
 }
 
@@ -76,6 +75,7 @@ server = http.createServer( function(req, res) {
 
         req.on('end', function () {
             dataObj = JSON.parse(body);
+            console.log(dataObj);
         });
     }
     else
