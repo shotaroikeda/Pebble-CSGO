@@ -8,6 +8,9 @@ Pebble.addEventListener('ready', function () {
     console.log("Pebble JS ready.");
     if (!server_ip)
         console.log("server_ip is not configured.");
+
+    // Initialize app data with initial data
+    retrieveCSGO();
 });
 
 Pebble.addEventListener('showConfiguration', function (e) {
@@ -39,6 +42,14 @@ Pebble.addEventListener('webviewclosed', function (e) {
 
         localStorage.setItem("ipaddr", server_ip);
     }
+});
+
+Pebble.addEventListener('appmessage', function (e) {
+    console.log("App Message request recieved");
+    retrieveCSGO();
+    console.log(e.type);
+    console.log(e.payload);
+    console.log("App Message request resolved");
 });
 
 /////////////////////////////////
