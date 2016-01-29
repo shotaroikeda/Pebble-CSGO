@@ -30,29 +30,27 @@ Object.keys(ifaces).forEach(function (ifname) {
 function filterCSGOData(dataObj)
 {
     var dataMap = {
-	provider : {},
-	map : {},
-	round : {},
-	/*
-	  As of now, not required...maybe in the future for gui fanciness
-	  player :
-	*/ 
+        provider : {},
+        map : {},
+        round : {},
+        /*
+         As of now, not required...maybe in the future for gui fanciness
+         player :
+         */
     };
 
-    if (dataObj.provider)
-    {
-	dataMap.provider["timestamp"] = dataObj.provider.timestamp;
-    }
-    if (dataObj.map)
-    {
-	dataMap.map["mode"] = dataObj.map.mode || "none";
-    }
+    // server time stamp
+    dataMap.provider["timestamp"] = dataObj.provider.timestamp || 0;
 
-    if (dataObj.round)
-    {
-	dataMap.round["phase"] = dataObj.round.phase || "none";
-	dataMap.round["bomb"] = dataObj.round.bomb || "none";
-    }
+    // Map data
+    dataMap.map["mode"] = dataObj.map.mode || "none";
+    dataMap.map["team_ct_score"] = dataObj.map.team_ct.score || 0;
+    dataMap.map["team_t_score"] = dataObj.map.team_t.score || 0;
+
+    // Round data
+    dataMap.round["phase"] = dataObj.round.phase || "none";
+    dataMap.round["bomb"] = dataObj.round.bomb || "none";
+
 
     return dataMap;
 }
