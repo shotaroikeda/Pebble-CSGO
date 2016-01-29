@@ -57,6 +57,7 @@ Pebble.addEventListener('appmessage', function (e) {
 /////////////////////////////////
 
 function retrieveCSGO() {
+    console.log("retrieving CSGO Data");
     if (!server_ip) {
         // Bad Initial Configuration
         console.log("Server's IP Address is not properly configured!");
@@ -72,7 +73,12 @@ function retrieveCSGO() {
 
     var req = new XMLHttpRequest();
     req.open('GET', server_ip);
+    console.log("opening: " + server_ip);
+
     req.onload = function () {
+	console.log("loaded data");
+	console.log(req.readyState);
+	console.log(req.status);
         if (req.readyState == 4) {
             if (req.status == 200) {
                 console.log(req.responseText);
@@ -101,4 +107,9 @@ function retrieveCSGO() {
             }
         }
     };
+
+    req.send();
+
+    console.log(req.status);
+    console.log("Ending CSGO data func");
 }
