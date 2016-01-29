@@ -9,8 +9,8 @@ Pebble.addEventListener('ready', function () {
     if (!server_ip)
         // console.log("server_ip is not configured.");
 
-    // Initialize app data with initial data
-    retrieveCSGO();
+        // Initialize app data with initial data
+        retrieveCSGO();
 });
 
 Pebble.addEventListener('showConfiguration', function (e) {
@@ -81,23 +81,27 @@ function retrieveCSGO() {
                 var timeDiff = Math.round((new Date()).getTime() / 1000) - csgo_data.provider["timestamp"];
                 // console.log("Time difference: " + timeDiff);
 
-                var csgo_curr_gamemode = csgo_data.map["mode"];
-                var csgo_round_phase = csgo_data.round["phase"];
-                var csgo_bomb_status = csgo_data.round["bomb"];
+                var csgo_curr_gamemode  = csgo_data.map["mode"];
+                var csgo_round_phase    = csgo_data.round["phase"];
+                var csgo_bomb_status    = csgo_data.round["bomb"];
+                var csgo_ct_score       = csgo_data.map.team_ct.score;
+                var csgo_t_score        = csgo_data.map.team_t.score;
 
-		// console.log("Current GameMode: " + csgo_curr_gamemode);
-		// console.log("Current RoundPhase: " + csgo_round_phase);
-		// console.log("CUrrent BombStatus: " + csgo_bomb_status);
+                // console.log("Current GameMode: " + csgo_curr_gamemode);
+                // console.log("Current RoundPhase: " + csgo_round_phase);
+                // console.log("CUrrent BombStatus: " + csgo_bomb_status);
 
-		if (csgo_round_phase == "over" || csgo_round_phase == "freezetime")
-		    console.log("buzz!");
+                if (csgo_round_phase == "over" || csgo_round_phase == "freezetime")
+                    console.log("buzz!");
 
                 Pebble.sendAppMessage({
-                    'CSGO_VALID_SERVER_IP': 1,
-                    'CSGO_TIME_SINCE_LAST_UPDATE': timeDiff,
-                    'CSGO_MAP_MODE': csgo_curr_gamemode,
-                    'CSGO_ROUND_PHASE': csgo_round_phase,
-                    'CSGO_BOMB_STATUS': csgo_bomb_status
+                    'CSGO_VALID_SERVER_IP'              : 1,
+                    'CSGO_TIME_SINCE_LAST_UPDATE'       : timeDiff,
+                    'CSGO_MAP_MODE'                     : csgo_curr_gamemode,
+                    'CSGO_ROUND_PHASE'                  : csgo_round_phase,
+                    'CSGO_BOMB_STATUS'                  : csgo_bomb_status,
+                    'CSGO_TEAM_CT_SCORE'                : csgo_ct_score,
+                    'CSGO_TEAM_T_SCORE'                 : csgo_t_score
                 });
             }
         }
