@@ -1,7 +1,11 @@
 #include <pebble.h>
 #include <string.h>
 
+#define WAIT_TIME 25
+#define REFRESH_INTERVAL 5
+
 static bool valid_server_ip = false;
+static bool drop_flg = true;
 static int waiter = 0;
 
 static Window *window;
@@ -25,46 +29,57 @@ static void sync_error_callback(DictionaryResult dict_error, AppMessageResult ap
 }
 
 static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tuple, const Tuple* old_tuple, void* context) {
+	/***************************************************************************************************/
+        /* Notes on callback:										   */
+	/* 	Seems like the call back gets called in streams of 2. In other words, we need to	   */
+	/* 	"drop" very other value, or else the buzzing vibration doesn't work as well.		   */
+        /***************************************************************************************************/
+
         switch (key) {
         case CSGO_VALID_SERVER_IP:
                 valid_server_ip = new_tuple->value->uint8;
                 valid_server_ip ?
                         text_layer_set_text(t_verbose, "All is good.") :
                         text_layer_set_text(t_verbose, "No Valid server found.");
-		// APP_LOG(APP_LOG_LEVEL_DEBUG, "Valid_server_ip: %d", new_tuple->value->uint8);
+                // APP_LOG(APP_LOG_LEVEL_DEBUG, "Valid_server_ip: %d", new_tuple->value->uint8);
                 break;
 
-	case CSGO_TIME_SINCE_LAST_UPDATE:
-		// APP_LOG(APP_LOG_LEVEL_DEBUG, "Time Since Last Update: %d", new_tuple->value->uint8);
-		break;
+        case CSGO_TIME_SINCE_LAST_UPDATE:
+                // APP_LOG(APP_LOG_LEVEL_DEBUG, "Time Since Last Update: %d", new_tuple->value->uint8);
+                break;
 
-	case CSGO_MAP_MODE:
-		// APP_LOG(APP_LOG_LEVEL_DEBUG, "CSGO Mode: %s", new_tuple->value->cstring);
-		break;
-		
-	case CSGO_ROUND_PHASE:
-		// APP_LOG(APP_LOG_LEVEL_DEBUG, "CSGO Round Phase: %s", new_tuple->value->cstring);
+        case CSGO_MAP_MODE:
+                // APP_LOG(APP_LOG_LEVEL_DEBUG, "CSGO Mode: %s", new_tuple->value->cstring);
+                break;
 
-		if (strcmp(new_tuple->value->cstring, "freezetime") == 0) {
-			vibes_short_pulse();
-			vibes_short_pulse();
-			waiter = 20;
-		} else {
-			// APP_LOG(APP_LOG_LEVEL_DEBUG, "%s != freezetime", new_tuple->value->cstring);
-		}
+        case CSGO_ROUND_PHASE:
+                // APP_LOG(APP_LOG_LEVEL_DEBUG, "CSGO Round Phase: %s", new_tuple->value->cstring);
 
-		break;
+		// We want to take the first available input then drop the 2nd one. i.e.
+		// drop = !drop should come after this portion
+                if (drop_flg &&
+		     (strcmp(new_tuple->value->cstring, "freezetime")     == 0 ||
+		     strcmp(new_tuple->value->cstring, "over")           == 0)) {
+                        vibes_long_pulse();
+                        waiter = WAIT_TIME;
+                } else {
+                        // APP_LOG(APP_LOG_LEVEL_DEBUG, "%s != freezetime", new_tuple->value->cstring);
+                }
+		drop_flg = !drop_flg;
 
-	case CSGO_BOMB_STATUS:
-		// // APP_LOG(APP_LOG_LEVEL_DEBUG, "CSGO Bomb Status: %s", new_tuple->value->cstring);
+                break;
 
-		if (strcmp(new_tuple->value->cstring, "exploded") == 0 ||
-		    strcmp(new_tuple->value->cstring, "defused") == 0) {
-			vibes_short_pulse();
-			vibes_short_pulse();
-			waiter = 20;
-		}
-		break;
+        case CSGO_BOMB_STATUS:
+                // APP_LOG(APP_LOG_LEVEL_DEBUG, "CSGO Bomb Status: %s", new_tuple->value->cstring);
+
+                /* if (strcmp(new_tuple->value->cstring, "exploded") == 0 || */
+                /*     strcmp(new_tuple->value->cstring, "defused") == 0 || */
+		/* 	) { */
+                /*         vibes_long_pulse(); */
+		/* 	; */
+                /*         waiter = WAIT_TIME; */
+                /* } */
+                break;
 
         default:
                 break;
@@ -72,7 +87,7 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
 }
 
 static void request_csgo_data() {
-	// No message passed, send ping data
+        // No message passed, send ping data
         DictionaryIterator * it;
         app_message_outbox_begin(&it);
 
@@ -87,13 +102,16 @@ static void request_csgo_data() {
 
 static void tick_timer_second_handler(struct tm *tick_time, TimeUnits units_changed)
 {
-	// Refresh every other second
-	if (tick_time->tm_sec % 2 == 0 || waiter == 0)
-	{
-		request_csgo_data();
-	} else if (waiter != 0) {
-		waiter--;
-	}
+	// Refresh every 5 seconds
+        if (tick_time->tm_sec % REFRESH_INTERVAL == 0 && waiter == 0)
+        {
+                request_csgo_data();
+        }
+        else if (waiter != 0)
+        {
+                APP_LOG(APP_LOG_LEVEL_DEBUG, "Waiter Enabled: %d", waiter);
+                waiter--;
+        }
 }
 
 static void window_load(Window *window) {
@@ -135,8 +153,8 @@ static void window_unload(Window *window) {
 }
 
 static void init(void) {
-	// Subscribe to tick handler
-	tick_timer_service_subscribe(SECOND_UNIT, tick_timer_second_handler);
+        // Subscribe to tick handler
+        tick_timer_service_subscribe(SECOND_UNIT, tick_timer_second_handler);
 
         window = window_create();
         window_set_window_handlers(window, (WindowHandlers) {
@@ -151,7 +169,7 @@ static void init(void) {
 }
 
 static void deinit(void) {
-	tick_timer_service_unsubscribe();
+        tick_timer_service_unsubscribe();
         window_destroy(window);
         app_sync_deinit(&s_sync);
 }

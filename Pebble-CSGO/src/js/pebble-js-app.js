@@ -89,6 +89,9 @@ function retrieveCSGO() {
 		// console.log("Current RoundPhase: " + csgo_round_phase);
 		// console.log("CUrrent BombStatus: " + csgo_bomb_status);
 
+		if (csgo_round_phase == "over" || csgo_round_phase == "freezetime")
+		    console.log("buzz!");
+
                 Pebble.sendAppMessage({
                     'CSGO_VALID_SERVER_IP': 1,
                     'CSGO_TIME_SINCE_LAST_UPDATE': timeDiff,
