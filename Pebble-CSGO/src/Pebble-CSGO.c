@@ -1,38 +1,20 @@
+/* Include definitions/constants */ 
+#include "Pebble-CSGO.h"
+
 #include <pebble.h>
 #include <string.h>
 
-#define WAIT_TIME 25
-#define REFRESH_INTERVAL 5
 
-static bool valid_server_ip = false;
-static bool drop_flg = true;
-static int waiter = 0;
-
-static Window *window;
-static TextLayer *text_layer;
-static TextLayer *t_verbose;
-
-static AppSync s_sync;
-static uint8_t s_sync_buffer[128];
-
-// Register enumerators for better syntax
-enum CSGO_KEYS {
-        CSGO_VALID_SERVER_IP        = 0,
-        CSGO_TIME_SINCE_LAST_UPDATE = 1,
-        CSGO_MAP_MODE               = 2,
-        CSGO_ROUND_PHASE            = 3,
-        CSGO_BOMB_STATUS            = 4
-};
 
 static void sync_error_callback(DictionaryResult dict_error, AppMessageResult app_message_error, void *context) {
-        // APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message Sync Error: %d", app_message_error);
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message Sync Error: %d", app_message_error);
 }
 
 static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tuple, const Tuple* old_tuple, void* context) {
-	/***************************************************************************************************/
-        /* Notes on callback:										   */
-	/* 	Seems like the call back gets called in streams of 2. In other words, we need to	   */
-	/* 	"drop" very other value, or else the buzzing vibration doesn't work as well.		   */
+        /***************************************************************************************************/
+        /* Notes on callback:                                                                              */
+        /*      Seems like the call back gets called in streams of 2. In other words, we need to           */
+        /*      "drop" very other value, or else the buzzing vibration doesn't work as well.               */
         /***************************************************************************************************/
 
         switch (key) {
@@ -55,17 +37,17 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
         case CSGO_ROUND_PHASE:
                 // APP_LOG(APP_LOG_LEVEL_DEBUG, "CSGO Round Phase: %s", new_tuple->value->cstring);
 
-		// We want to take the first available input then drop the 2nd one. i.e.
-		// drop = !drop should come after this portion
+                // We want to take the first available input then drop the 2nd one. i.e.
+                // drop = !drop should come after this portion
                 if (drop_flg &&
-		     (strcmp(new_tuple->value->cstring, "freezetime")     == 0 ||
-		     strcmp(new_tuple->value->cstring, "over")           == 0)) {
+                    (strcmp(new_tuple->value->cstring, "freezetime")     == 0 ||
+                     strcmp(new_tuple->value->cstring, "over")           == 0)) {
                         vibes_long_pulse();
                         waiter = WAIT_TIME;
                 } else {
                         // APP_LOG(APP_LOG_LEVEL_DEBUG, "%s != freezetime", new_tuple->value->cstring);
                 }
-		drop_flg = !drop_flg;
+                drop_flg = !drop_flg;
 
                 break;
 
@@ -74,12 +56,15 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
 
                 /* if (strcmp(new_tuple->value->cstring, "exploded") == 0 || */
                 /*     strcmp(new_tuple->value->cstring, "defused") == 0 || */
-		/* 	) { */
+                /*      ) { */
                 /*         vibes_long_pulse(); */
-		/* 	; */
+                /*      ; */
                 /*         waiter = WAIT_TIME; */
                 /* } */
                 break;
+
+	case CSGO_TEAM_CT_SCORE:
+
 
         default:
                 break;
@@ -102,7 +87,7 @@ static void request_csgo_data() {
 
 static void tick_timer_second_handler(struct tm *tick_time, TimeUnits units_changed)
 {
-	// Refresh every 5 seconds
+        // Refresh every 5 seconds
         if (tick_time->tm_sec % REFRESH_INTERVAL == 0 && waiter == 0)
         {
                 request_csgo_data();
@@ -138,6 +123,8 @@ static void window_load(Window *window) {
                 TupletCString(CSGO_MAP_MODE, "none"),
                 TupletCString(CSGO_ROUND_PHASE, "none"),
                 TupletCString(CSGO_BOMB_STATUS, "none")
+                TupletInteger(CSGO_TEAM_CT_SCORE, (uint8_t)0),
+                TupletInteger(CSGO_TEAM_T_SCORE, (uint8_t)0),
         };
 
         app_sync_init(&s_sync, s_sync_buffer, sizeof(s_sync_buffer),
