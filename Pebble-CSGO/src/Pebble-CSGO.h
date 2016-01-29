@@ -52,16 +52,16 @@ enum COMPETITIVE_BOMB_STATUS {
 /********************/
 
 // Overhead variables
-static bool valid_server_ip     = false;        // Checks for a valid server IP address.
+static bool valid_server_ip = false;  // Checks for a valid server IP address.
 
 
-static bool drop_flg            = true;         // Used to force everyother call to CSGO_ROUND_PHASE is dropped.
-                                                // Without this being set properly, the Watch vibrates 2 times
-                                                // instead of 1.
+static bool drop_flg        = true;   // Used to force everyother call to CSGO_ROUND_PHASE is dropped.
+                                      // Without this being set properly, the Watch vibrates 2 times
+                                      // instead of 1.
 
 
-static int waiter               = 0;            // Variable used to temporarily lock the Watch from
-                                                // vibrating again.
+static int waiter           = 0;      // Variable used to temporarily lock the Watch from
+                                      // vibrating again.
 
 // Watch requirements
 static Window *window;
