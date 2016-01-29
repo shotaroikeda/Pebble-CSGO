@@ -1,4 +1,4 @@
-/* Include definitions/constants */ 
+/* Include definitions/constants */
 #include "Pebble-CSGO.h"
 
 #include <pebble.h>
@@ -63,8 +63,8 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
                 /* } */
                 break;
 
-	case CSGO_TEAM_CT_SCORE:
-
+        case CSGO_TEAM_CT_SCORE:
+		break;
 
         default:
                 break;
@@ -122,9 +122,9 @@ static void window_load(Window *window) {
                 TupletInteger(CSGO_TIME_SINCE_LAST_UPDATE, (uint8_t)0),
                 TupletCString(CSGO_MAP_MODE, "none"),
                 TupletCString(CSGO_ROUND_PHASE, "none"),
-                TupletCString(CSGO_BOMB_STATUS, "none")
-                TupletInteger(CSGO_TEAM_CT_SCORE, (uint8_t)0),
-                TupletInteger(CSGO_TEAM_T_SCORE, (uint8_t)0),
+                TupletCString(CSGO_BOMB_STATUS, "none"),
+                TupletInteger(CSGO_TEAM_CT_SCORE, (uint8_t) 0),
+                TupletInteger(CSGO_TEAM_T_SCORE, (uint8_t) 0)
         };
 
         app_sync_init(&s_sync, s_sync_buffer, sizeof(s_sync_buffer),
