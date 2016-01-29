@@ -65,6 +65,9 @@ static bool drop_flg        = true;   // Used to force everyother call to CSGO_R
 static int waiter           = 0;      // Variable used to temporarily lock the Watch from
                                       // vibrating again.
 
+static uint8_t last_updated = 0;      // Variable used to hold approx. how long ago the last message from
+                                      // the server was recieved.
+
 // Watch requirements
 static Window *window;
 static TextLayer *text_layer;

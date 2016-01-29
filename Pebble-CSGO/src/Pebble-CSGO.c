@@ -28,10 +28,11 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
 
         case CSGO_TIME_SINCE_LAST_UPDATE:
                 // APP_LOG(APP_LOG_LEVEL_DEBUG, "Time Since Last Update: %d", new_tuple->value->uint8);
+		last_updated = new_tuple->value->uint8;
                 break;
 
         case CSGO_MAP_MODE:
-                // APP_LOG(APP_LOG_LEVEL_DEBUG, "CSGO Mode: %s", new_tuple->value->cstring);
+                // APP_LOG(APP_LOG_LEVEL_DEBUG, "CSGO ode: %s", new_tuple->value->cstring);
                 break;
 
         case CSGO_ROUND_PHASE:
