@@ -33,7 +33,7 @@
    }
 
    $(document).ready(function () {
-       document.getElementById("ipaddr") = parseURI()["ipaddr_default"];
+       document.getElementById("ipaddr").value = parseURI()["ipaddr_default"];
        $("#save-conf").click(function () {
            var retVal = {
                'ipaddr': $('#ipaddr').val()
