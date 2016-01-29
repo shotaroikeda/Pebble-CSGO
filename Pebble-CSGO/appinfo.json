@@ -10,7 +10,11 @@
         "watchface": false
     },
     "appKeys": {
-        "dummy": 0
+        "CSGO_VALID_SERVER_IP": 0,
+        "CSGO_TIME_SINCE_LAST_UPDATE": 0,
+        "CSGO_MAP_MODE": "none",
+        "CSGO_ROUND_PHASE": "none",
+        "CSGO_BOMB_STATUS": "none"
     },
     "resources": {
         "media": []
