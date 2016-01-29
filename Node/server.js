@@ -45,13 +45,13 @@ function filterCSGOData(dataObj)
     }
     if (dataObj.map)
     {
-	dataMap.map["mode"] = dataObj.map.mode || null;
+	dataMap.map["mode"] = dataObj.map.mode || "none";
     }
 
     if (dataObj.round)
     {
-	dataMap.round["phase"] = dataObj.round.phase || null;
-	dataMap.round["bomb"] = dataObj.round.bomb || null;
+	dataMap.round["phase"] = dataObj.round.phase || "none";
+	dataMap.round["bomb"] = dataObj.round.bomb || "none";
     }
 
     return dataMap;
