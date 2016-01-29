@@ -1,6 +1,8 @@
 #include <pebble.h>
+#include <string.h>
 
 static bool valid_server_ip = false;
+static int waiter = 0;
 
 static Window *window;
 static TextLayer *text_layer;
@@ -18,24 +20,6 @@ enum CSGO_KEYS {
         CSGO_BOMB_STATUS            = 4
 };
 
-static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-        text_layer_set_text(text_layer, "Select");
-}
-
-static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-        text_layer_set_text(text_layer, "Up");
-}
-
-static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-        text_layer_set_text(text_layer, "Down");
-}
-
-static void click_config_provider(void *context) {
-        window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
-        window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
-        window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
-}
-
 static void sync_error_callback(DictionaryResult dict_error, AppMessageResult app_message_error, void *context) {
         APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message Sync Error: %d", app_message_error);
 }
@@ -47,23 +31,37 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
                 valid_server_ip ?
                         text_layer_set_text(t_verbose, "All is good.") :
                         text_layer_set_text(t_verbose, "No Valid server found.");
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "Valid_server_ip: %d %d", valid_server_ip, new_tuple->value->uint8);
+		// APP_LOG(APP_LOG_LEVEL_DEBUG, "Valid_server_ip: %d", new_tuple->value->uint8);
                 break;
 
 	case CSGO_TIME_SINCE_LAST_UPDATE:
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "Time Since Last Update: %d", new_tuple->value->uint8);
+		// APP_LOG(APP_LOG_LEVEL_DEBUG, "Time Since Last Update: %d", new_tuple->value->uint8);
 		break;
 
 	case CSGO_MAP_MODE:
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "CSGO Mode: %s", new_tuple->value->cstring);
+		// APP_LOG(APP_LOG_LEVEL_DEBUG, "CSGO Mode: %s", new_tuple->value->cstring);
 		break;
 		
 	case CSGO_ROUND_PHASE:
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "CSGO Round Phase: %s", new_tuple->value->cstring);
+		// APP_LOG(APP_LOG_LEVEL_DEBUG, "CSGO Round Phase: %s", new_tuple->value->cstring);
+
+		if (strcmp(new_tuple->value->cstring, "freezetime") == 0) {
+			vibes_short_pulse();
+			vibes_short_pulse();
+			waiter = 20;
+		}
+
 		break;
 
 	case CSGO_BOMB_STATUS:
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "CSGO Bomb Status: %s", new_tuple->value->cstring);
+
+		if (strcmp(new_tuple->value->cstring, "exploded") == 0 ||
+		    strcmp(new_tuple->value->cstring, "defused") == 0) {
+			vibes_short_pulse();
+			vibes_short_pulse();
+			waiter = 20;
+		}
 		break;
 
         default:
@@ -72,6 +70,7 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
 }
 
 static void request_csgo_data() {
+	// No message passed, send ping data
         DictionaryIterator * it;
         app_message_outbox_begin(&it);
 
@@ -82,6 +81,17 @@ static void request_csgo_data() {
         dict_write_end(it);
 
         app_message_outbox_send();
+}
+
+static void tick_timer_second_handler(struct tm *tick_time, TimeUnits units_changed)
+{
+	// Refresh every other second
+	if (tick_time->tm_sec % 2 == 0 || waiter == 0)
+	{
+		request_csgo_data();
+	} else if (waiter != 0) {
+		waiter--;
+	}
 }
 
 static void window_load(Window *window) {
@@ -123,8 +133,10 @@ static void window_unload(Window *window) {
 }
 
 static void init(void) {
+	// Subscribe to tick handler
+	tick_timer_service_subscribe(SECOND_UNIT, tick_timer_second_handler);
+
         window = window_create();
-        window_set_click_config_provider(window, click_config_provider);
         window_set_window_handlers(window, (WindowHandlers) {
                         .load = window_load,
                                 .unload = window_unload,
@@ -137,6 +149,7 @@ static void init(void) {
 }
 
 static void deinit(void) {
+	tick_timer_service_unsubscribe();
         window_destroy(window);
         app_sync_deinit(&s_sync);
 }
