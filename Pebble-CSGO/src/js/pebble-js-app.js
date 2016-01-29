@@ -1,14 +1,13 @@
-var http = require('http');
-
-var server = http.createServer(function (res, req) {
-    console.log("found request");
-});
+var server_ip = localStorage.getItem("ipaddr");
 
 ////////////////////////////////
 // Event Listeners for pebble //
 ////////////////////////////////
+
 Pebble.addEventListener('ready', function () {
     console.log("Pebble JS ready.");
+    if (!server_ip)
+	console.log("server_ip is not configured.");
 });
 
 Pebble.addEventListener('showConfiguration', function (e) {
@@ -19,5 +18,11 @@ Pebble.addEventListener('showConfiguration', function (e) {
 
 Pebble.addEventListener('webviewclosed', function (e) {
     console.log("Page closed.");
-    console.log("Closed with " + e.response["port-num"]);
+    var jsObj = JSON.parse(e.response);
+
+    if (jsObj["ipaddr"])
+    {
+	localStorage.setItem("ipaddr", jsObj["ipaddr"]);
+	server_ip = jsObj["ipaddr"];
+    }
 });
