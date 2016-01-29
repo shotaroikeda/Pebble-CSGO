@@ -14,7 +14,7 @@
 
         <div class="panel-body">
           Please enter server address (without http://) (ie: 192.168.2.109:8099): 
-          <input type="text" name="port-num" id="portNumber"><br>
+          <input type="text" name="port-num" id="ipaddr"><br>
 	  <br>
           <div class="ui-body ui-body-b">
             <fieldset class="ui-grid-a">
@@ -27,10 +27,21 @@
   </body>
 
   <script>
+   function parseURI () {
+       var query = decodeURIComponent(location.search.substr(1));
+       var result = {}
+       query.split('&').forEach(function (part) {
+	   var item = part.split('=');
+	   result[item[0]] = result[item[1]];
+       });
+       return result;
+   }
+
    $(document).ready(function () {
+       $('#ipaddr').value = parseURI()["ipaddr_default"];
        $("#save-conf").click(function () {
            var retVal = {
-               'port-num': $('#portNumber').val()
+               'ipaddr': $('#ipaddr').val()
            };
 
            document.location = "pebblejs://close#" + encodeURIComponent(JSON.stringify(retVal));
