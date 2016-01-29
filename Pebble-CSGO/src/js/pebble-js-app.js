@@ -5,9 +5,9 @@ var server_ip = localStorage.getItem("ipaddr");
 ////////////////////////////////
 
 Pebble.addEventListener('ready', function () {
-    console.log("Pebble JS ready.");
+    // console.log("Pebble JS ready.");
     if (!server_ip)
-        console.log("server_ip is not configured.");
+        // console.log("server_ip is not configured.");
 
     // Initialize app data with initial data
     retrieveCSGO();
@@ -15,7 +15,7 @@ Pebble.addEventListener('ready', function () {
 
 Pebble.addEventListener('showConfiguration', function (e) {
     // Show config page
-    console.log("Showing page...");
+    // console.log("Showing page...");
 
     var url;
     if (server_ip) {
@@ -27,12 +27,12 @@ Pebble.addEventListener('showConfiguration', function (e) {
             encodeURIComponent(JSON.stringify({"ipaddr_default" : "xxx.xxx.x.x:yyyyy"}));
     }
 
-    console.log(url);
+    // console.log(url);
     Pebble.openURL(url);
 });
 
 Pebble.addEventListener('webviewclosed', function (e) {
-    console.log("Page closed.");
+    // console.log("Page closed.");
     var jsObj = JSON.parse(e.response);
 
     if (jsObj["ipaddr"])
@@ -45,11 +45,8 @@ Pebble.addEventListener('webviewclosed', function (e) {
 });
 
 Pebble.addEventListener('appmessage', function (e) {
-    console.log("App Message request recieved");
+    // retrieve CSGO data from server
     retrieveCSGO();
-    console.log(e.type);
-    console.log(e.payload);
-    console.log("App Message request resolved");
 });
 
 /////////////////////////////////
@@ -57,7 +54,7 @@ Pebble.addEventListener('appmessage', function (e) {
 /////////////////////////////////
 
 function retrieveCSGO() {
-    console.log("retrieving CSGO Data");
+    // console.log("retrieving CSGO Data");
     if (!server_ip) {
         // Bad Initial Configuration
         console.log("Server's IP Address is not properly configured!");
@@ -73,29 +70,24 @@ function retrieveCSGO() {
 
     var req = new XMLHttpRequest();
     req.open('GET', server_ip);
-    console.log("opening: " + server_ip);
 
     req.onload = function () {
-	console.log("loaded data");
-	console.log(req.readyState);
-	console.log(req.status);
         if (req.readyState == 4) {
             if (req.status == 200) {
-                console.log(req.responseText);
-
                 // CSGO's Json object is changed around in here.
                 var csgo_data = JSON.parse(req.responseText);
 
                 // MARK: Time diff might be screwed up.
-                var timeDiff = (new Date()).getTime() - csgo_data.provider["timestamp"];
-                console.log("Time difference: " + timeDiff);
+                var timeDiff = Math.round((new Date()).getTime() / 1000) - csgo_data.provider["timestamp"];
+                // console.log("Time difference: " + timeDiff);
 
                 var csgo_curr_gamemode = csgo_data.map["mode"];
-                console.log("Current GameMode: " + csgo_curr_gamemode);
                 var csgo_round_phase = csgo_data.round["phase"];
-                console.log("Current Phase: " + csgo_round_phase);
                 var csgo_bomb_status = csgo_data.round["bomb"];
-                console.log("Current Bomb Status: " + csgo_bomb_status);
+
+		// console.log("Current GameMode: " + csgo_curr_gamemode);
+		// console.log("Current RoundPhase: " + csgo_round_phase);
+		// console.log("CUrrent BombStatus: " + csgo_bomb_status);
 
                 Pebble.sendAppMessage({
                     'CSGO_VALID_SERVER_IP': 1,
@@ -109,7 +101,4 @@ function retrieveCSGO() {
     };
 
     req.send();
-
-    console.log(req.status);
-    console.log("Ending CSGO data func");
 }

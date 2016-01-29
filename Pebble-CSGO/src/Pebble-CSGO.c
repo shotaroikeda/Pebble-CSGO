@@ -9,7 +9,7 @@ static TextLayer *text_layer;
 static TextLayer *t_verbose;
 
 static AppSync s_sync;
-static uint8_t s_sync_buffer[64];
+static uint8_t s_sync_buffer[128];
 
 // Register enumerators for better syntax
 enum CSGO_KEYS {
@@ -21,7 +21,7 @@ enum CSGO_KEYS {
 };
 
 static void sync_error_callback(DictionaryResult dict_error, AppMessageResult app_message_error, void *context) {
-        APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message Sync Error: %d", app_message_error);
+        // APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message Sync Error: %d", app_message_error);
 }
 
 static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tuple, const Tuple* old_tuple, void* context) {
@@ -49,12 +49,14 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
 			vibes_short_pulse();
 			vibes_short_pulse();
 			waiter = 20;
+		} else {
+			// APP_LOG(APP_LOG_LEVEL_DEBUG, "%s != freezetime", new_tuple->value->cstring);
 		}
 
 		break;
 
 	case CSGO_BOMB_STATUS:
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "CSGO Bomb Status: %s", new_tuple->value->cstring);
+		// // APP_LOG(APP_LOG_LEVEL_DEBUG, "CSGO Bomb Status: %s", new_tuple->value->cstring);
 
 		if (strcmp(new_tuple->value->cstring, "exploded") == 0 ||
 		    strcmp(new_tuple->value->cstring, "defused") == 0) {
@@ -145,7 +147,7 @@ static void init(void) {
         window_stack_push(window, animated);
 
         // Create the configuration buffer
-        app_message_open(64, 64);
+        app_message_open(128, 64);
 }
 
 static void deinit(void) {
@@ -157,7 +159,7 @@ static void deinit(void) {
 int main(void) {
         init();
 
-        APP_LOG(APP_LOG_LEVEL_DEBUG, "Done initializing, pushed window: %p", window);
+        // APP_LOG(APP_LOG_LEVEL_DEBUG, "Done initializing, pushed window: %p", window);
 
         app_event_loop();
         deinit();
