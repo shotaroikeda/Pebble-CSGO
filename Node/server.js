@@ -40,17 +40,31 @@ function filterCSGOData(dataObj)
     };
 
     // server time stamp
-    dataMap.provider["timestamp"] = dataObj.provider.timestamp || 0;
+    dataMap.provider["timestamp"] = dataObj.provider ? dataObj.provider.timestamp || 0 : 0;
 
     // Map data
-    dataMap.map["mode"] = dataObj.map.mode || "none";
-    dataMap.map["team_ct_score"] = dataObj.map.team_ct.score || 0;
-    dataMap.map["team_t_score"] = dataObj.map.team_t.score || 0;
+    if (dataObj.map)
+    {
+        dataMap.map["mode"]		= dataObj.map.mode || "none";
+        dataMap.map["team_ct_score"]	= dataObj.map.team_ct ? dataObj.map.team_ct.score || 0 : 0;
+        dataMap.map["team_t_score"]	= dataObj.map.team_t ? dataObj.map.team_t.score || 0 : 0;
+    } else {
+        dataMap.map["mode"]		= "none";
+        dataMap.map["team_ct_score"]	= 0;
+        dataMap.map["team_t_score"]	= 0;
+    }
 
     // Round data
-    dataMap.round["phase"] = dataObj.round.phase || "none";
-    dataMap.round["bomb"] = dataObj.round.bomb || "none";
-
+    if (dataObj.round)
+    {
+        dataMap.round["phase"]	= dataObj.round.phase || "none";
+        dataMap.round["bomb"]	= dataObj.round.bomb || "none";
+    }
+    else
+    {
+        dataMap.round["phase"]	= "none";
+        dataMap.round["bomb"]	= "none";
+    }
 
     return dataMap;
 }
